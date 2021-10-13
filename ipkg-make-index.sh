@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+y#!/usr/bin/env bash
 set -e
 
 pkg_dir=$1
@@ -18,9 +18,9 @@ for pkg in `find $pkg_dir -name '*.ipk' | sort`; do
     [[ "$name" = "libc" ]] && continue
     echo "Generating index for package $pkg" >&2
     file_size=$(stat -L -c%s $pkg)
-    sha256sum=($(sha256sum $pkg))
+    sha256sum=$($MKHASH sha256 $pkg)
     # Take pains to make variable value sed-safe
-    sed_safe_pkg=$(echo $pkg | sed -e 's/^\.\///g' -e 's/\//\\\//g')
+    sed_safe_pkg=`echo $pkg | sed -e 's/^\.\///g' -e 's/\\//\\\\\\//g'`
     tar -xzOf $pkg ./control.tar.gz | tar xzOf - ./control | sed -e "s/^Description:/Filename: $sed_safe_pkg\\
 Size: $file_size\\
 SHA256sum: $sha256sum\\
